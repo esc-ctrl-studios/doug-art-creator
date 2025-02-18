@@ -31,3 +31,9 @@ source .venv/bin/activate
 ## VSCode
 
 Python will probably complain about imports. Need to select the right interpreter from the `.venv` directory.
+
+## Design FAQ
+
+### Why use pydandic instead of datamodels.dataclass?
+
+The response type of both `civitai.image.create` and `civitai.job.get` are both nested dicts. I didn't know a good way to automatically unpack the nested dicts into dataclasses, so I went the way of pydantic.
