@@ -7,6 +7,17 @@ import civitai
 from pydantic import BaseModel
 
 
+_DOUG_PROMPT_EXAMPLE = ("score_9, (Doug Funnie), journal, glowing, "
+                        "mecha_battle, giant_robot, cityscape, high_angle, "
+                        "dynamic, anime90s, action")
+_NEGATIVE_PROMPT = ("low quality, line art, deformed, ugly, sad, anxious, "
+                    "depressing,  old, full hair, 3d, sketch, monochrome, "
+                    "ecstacy, suggestive")
+
+# AutismMix SDXL: https://civitai.com/models/288584?modelVersionId=324619
+_MODEL = "urn:air:sdxl:checkpoint:civitai:288584@324619"
+_DOUG_LORA_MODEL = "urn:air:sdxl:lora:civitai:659532@737982"
+
 class Result(BaseModel):
     blobKey: str
     available: bool
@@ -52,19 +63,29 @@ def view_job(token: str) -> str:
 
 
 async def generate_image() -> ImageResponse | None:
-    # Currently copied from civitai. Adjust to actually make Dougs.
     input: dict[str, Any] = {
-        "model": "urn:air:sd1:checkpoint:civitai:4201@130072",
+        "model": _MODEL,
         "params": {
-            "prompt": "RAW photo, face portrait photo of 26 y.o woman, wearing black dress, happy face, hard shadows, cinematic shot, dramatic lighting",
-            "negativePrompt": "(deformed iris, deformed pupils, semi-realistic, cgi, 3d, render, sketch, cartoon, drawing, anime, mutated hands and fingers:1.4), (deformed, distorted, disfigured:1.3)",
+            # TODO: Make this accept themed Doug prompts, not fixed.
+            "prompt": _DOUG_PROMPT_EXAMPLE ,
+            "negativePrompt": _NEGATIVE_PROMPT,
             "scheduler": "EulerA",
-            "steps": 20,
+            "steps": 30,
             "cfgScale": 7,
-            "width": 512,
-            "height": 512,
+            "width": 832,
+            # Only works if you locally modify civitai/schemas/__init__.py to 
+            # lift the 1024 limit.
+            # https://github.com/civitai/civitai-python/issues/8
+            "height": 1216,
             "clipSkip": 2
+        },
+        "additionalNetworks": {
+            _DOUG_LORA_MODEL: {
+                "type": "Lora",
+                "strength": 0.85
+            }
         }
+
     }
 
     response = civitai.image.create(input)
