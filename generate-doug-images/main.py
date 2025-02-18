@@ -1,9 +1,10 @@
-from asyncio import Task, run
-import time
-import civitai
-from typing import Any, Sequence, Optional
-from pydantic import BaseModel
 import logging
+import time
+from asyncio import Task, run
+from typing import Any, Sequence
+
+import civitai
+from pydantic import BaseModel
 
 
 class Result(BaseModel):
@@ -28,7 +29,7 @@ class JobResponse(BaseModel):
     jobs: Sequence[Job]
 
 
-async def extract_urls(resp: ImageResponse) -> None: # Sequence[str]:
+async def extract_urls(resp: ImageResponse) -> None:
     all_ready = False
     job_resp: JobResponse|None = None
     while (not all_ready):
@@ -65,8 +66,11 @@ async def generate_image() -> ImageResponse | None:
             "clipSkip": 2
         }
     }
-    # Mocking out to save tokens.
+
     response = civitai.image.create(input)
+
+    # To mock the above call, comment it out and use the following... 
+    # TODO: Do this more professionally ;)
     # resp_str = """
     # {"token": "eyJKb2JzIjpbIjMyOThkOGE3LWUwNzUtNDMzMC05M2M1LWViMDMyZmM1NTEyYyJdfQ==", "jobs": [{"jobId": "3298d8a7-e075-4330-93c5-eb032fc5512c", "cost": 0.6400000000000001, "result": {"blobKey": "B6EE40547244BDEC2ADC15C837ED763BBC494F6B1D11592991EB989859B54212", "available": "False"}, "scheduled": "True"}]}
     # """
@@ -103,9 +107,7 @@ async def main():
 
     logging.info(f"response is {response}")
 
-    #urls = extract_urls(response)
     await extract_urls(response)
-    #logging.info(f"URLs: {urls}")
 
 
 if __name__ == '__main__':
