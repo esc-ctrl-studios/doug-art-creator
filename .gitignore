@@ -173,5 +173,10 @@ cython_debug/
 # VS Code
 .vscode/
 
-# Credentials file
+# Credentials files
 setup_credentials.sh
+credentials.json
+token.json
+
+# Outputs, just in case
+*.jpeg
